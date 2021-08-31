@@ -24,27 +24,31 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+const RTL_IGNORE_ANNOTATION = '/* @noflip */\n  /*rtl:ignore*/';
+
 describe('theme.test.scss', () => {
   it('emits custom properties using theme.property()', () => {
     const filePath = path.join(__dirname, 'theme.test.css');
     const css = fs.readFileSync(filePath, 'utf8').trim();
     expect(css).toEqual(`.test {
-  /* @noflip */
+  ${RTL_IGNORE_ANNOTATION}
   margin-left: 0;
-  /* @noflip */
+  ${RTL_IGNORE_ANNOTATION}
   margin-right: 8px;
   /* @alternate */
-  /* @noflip */
+  ${RTL_IGNORE_ANNOTATION}
   margin-right: var(--margin-prop, 8px);
 }
 [dir=rtl] .test, .test[dir=rtl] {
-  /* @noflip */
+  /*rtl:begin:ignore*/
+  ${RTL_IGNORE_ANNOTATION}
   margin-left: 8px;
   /* @alternate */
-  /* @noflip */
+  ${RTL_IGNORE_ANNOTATION}
   margin-left: var(--margin-prop, 8px);
-  /* @noflip */
+  ${RTL_IGNORE_ANNOTATION}
   margin-right: 0;
+  /*rtl:end:ignore*/
 }`);
   });
 });
