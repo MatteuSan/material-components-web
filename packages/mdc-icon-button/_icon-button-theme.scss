@@ -30,6 +30,7 @@
 @use '@material/density/variables' as density-variables;
 @use '@material/elevation/elevation-theme';
 @use '@material/feature-targeting/feature-targeting';
+@use '@material/ripple/ripple';
 @use '@material/ripple/ripple-theme';
 @use '@material/rtl/mixins' as rtl;
 @use '@material/theme/keys';
@@ -37,6 +38,7 @@
 @use '@material/theme/theme';
 @use '@material/theme/theme-color';
 @use '@material/tokens/resolvers';
+@use '@material/touch-target/mixins' as touch-target-mixins;
 
 $ripple-target: '.mdc-icon-button__ripple';
 
@@ -167,9 +169,29 @@ $light-theme: (
 
   @include size($size, $query: $query);
 
-  &.mdc-icon-button--touch {
-    @if $density-scale != 0 {
-      @include _touch-target-reset($query: $query);
+  &:not(.mdc-icon-button--increased-size) {
+    &.mdc-icon-button {
+      @if $density-scale > -2 {
+        @include ripple.radius-unbounded(
+          $radius: 40px,
+          $query: $query,
+          $ripple-target: $ripple-target
+        );
+      } @else {
+        @include ripple.radius-unbounded(
+          $query: $query,
+          $ripple-target: $ripple-target
+        );
+      }
+    }
+
+    .mdc-icon-button__touch {
+      @include touch-target-mixins.touch-target(
+        $set-width: true,
+        $query: $query,
+        $height: $size,
+        $width: $size
+      );
     }
   }
 }
@@ -187,27 +209,6 @@ $light-theme: (
     width: $size;
     height: $size;
     padding: math.div($size - $icon-size, 2);
-  }
-}
-
-///
-/// Resets touch target-related styles. This is called from the density mixin to
-/// automatically remove the increased touch target, since dense components
-/// don't have the same default a11y requirements.
-/// @access private
-///
-@mixin _touch-target-reset($query: feature-targeting.all()) {
-  $feat-structure: feature-targeting.create-target($query, structure);
-
-  @include feature-targeting.targets($feat-structure) {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  .mdc-icon-button__touch {
-    @include feature-targeting.targets($feat-structure) {
-      display: none;
-    }
   }
 }
 
